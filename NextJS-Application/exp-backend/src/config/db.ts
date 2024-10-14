@@ -5,7 +5,7 @@ import { DB_NAME } from './env';
 const connectToDatabase = async (MONGODB_URI: string) => {
   try {
     const MONGODB_OPTIONS = {
-      dbName: DB_NAME,git branch
+      dbName: DB_NAME,
 
     };
     await mongoose.connect(MONGODB_URI, MONGODB_OPTIONS);
