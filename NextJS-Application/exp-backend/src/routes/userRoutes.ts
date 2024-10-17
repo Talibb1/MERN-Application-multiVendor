@@ -4,7 +4,7 @@ import dotenv from "dotenv";
 dotenv.config();
 const router = express.Router();
 import accessTokenAutoRefresh from "../middleware/accessTokenAuto";
-import { Register, Login, Changepassword, Logout } from "../controllers/auth";
+import { Register, Login, Changepassword, Logout } from "../controllers/customer";
 import {
   CreateLead,
   DeleteLead,

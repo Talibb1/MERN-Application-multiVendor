@@ -1,11 +1,6 @@
 import mongoose from "mongoose";
 
 const SellerSchema = new mongoose.Schema({
-  seller_id: {
-    type: String,
-    required: true,
-    unique: true,
-  },
   name: {
     type: String,
     required: true,

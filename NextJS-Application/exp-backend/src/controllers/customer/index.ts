@@ -1,4 +1,4 @@
-import Register from "./registrationConroller";
+import Register from "./registerConroller";
 import Login from "./loginController";
 import Changepassword from "./changepassConroller";
 import Logout from "./logoutController";

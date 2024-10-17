@@ -17,7 +17,7 @@ const CountrySchema = new Schema({
     uppercase: true,
     minlength: [2, 'ISO Code 2 must be exactly 2 characters'],
     maxlength: [2, 'ISO Code 2 must be exactly 2 characters'],
-    match: [/^[A-Z]{2}$/, 'ISO Code 2 must be two uppercase letters'], // Validate it to be 2 uppercase letters
+    match: [/^[A-Z]{2}$/, 'ISO Code 2 must be two uppercase letters'],
   },
   iso_code_3: {
     type: String,
@@ -26,16 +26,16 @@ const CountrySchema = new Schema({
     uppercase: true,
     minlength: [3, 'ISO Code 3 must be exactly 3 characters'],
     maxlength: [3, 'ISO Code 3 must be exactly 3 characters'],
-    match: [/^[A-Z]{3}$/, 'ISO Code 3 must be three uppercase letters'], // Validate it to be 3 uppercase letters
+    match: [/^[A-Z]{3}$/, 'ISO Code 3 must be three uppercase letters'], 
   },
   address_format: {
     type: String,
     trim: true,
-    default: '', // Some countries may not have a specific address format
+    default: '', 
   },
   postcode_required: {
     type: Boolean,
-    default: false, // If true, postcodes will be required for addresses in this country
+    default: false, 
   },
   status: {
     type: Boolean,
