@@ -10,12 +10,7 @@ interface SearchHistoryDocument extends Document {
     vendorId?: Schema.Types.ObjectId; // Filter by vendor
   };
   searchDate: Date; // When the search was made
-  deviceInfo: {
-    deviceType: string; // Type of device used for the search (e.g., Mobile, Desktop, etc.)
-    os: string; // Operating System
-    browser: string; // Browser used
-    ip: string; // IP address of the user
-  };
+
   resultsCount: number; // How many results were returned
   viewedProducts: [Schema.Types.ObjectId]; // List of product IDs viewed after this search
 }

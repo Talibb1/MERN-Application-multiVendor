@@ -21,18 +21,6 @@ const AddressSchema: Schema<IAddress> = new Schema({
     ref: "Customer",
     required: true,
   },
-  firstname: {
-    type: String,
-    required: [true, "First name is required"],
-    trim: true,
-    minlength: [2, "First name must be at least 2 characters long"],
-  },
-  lastname: {
-    type: String,
-    required: [true, "Last name is required"],
-    trim: true,
-    minlength: [2, "Last name must be at least 2 characters long"],
-  },
   company: {
     type: String,
     trim: true,

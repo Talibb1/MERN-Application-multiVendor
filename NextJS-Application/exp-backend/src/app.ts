@@ -3,7 +3,7 @@ import cors from 'cors';
 import cookieParser from 'cookie-parser';
 import passport from 'passport';
 import router from './routes/userRoutes';
-// import { createGoogleAuthRoutes } from './routes/socialAuthRoutes';
+import { createGoogleAuthRoutes } from './routes/socialAuthRoutes';
 // import './middleware/passport';
 // import './controllers/oAuth/google-strategy';
 import { MONGODB_URI } from './config/env';
@@ -34,7 +34,7 @@ app.use(cookieParser());
 app.use(passport.initialize());
 
 // Connect to MongoDB
-connectToDatabase(MONGODB_URI).catch((error) => {
+connectToDatabase(MONGODB_URI!).catch((error) => {
   console.error('Error connecting to the database:', error);
   process.exit(1); // Exit the process if the DB connection fails
 });

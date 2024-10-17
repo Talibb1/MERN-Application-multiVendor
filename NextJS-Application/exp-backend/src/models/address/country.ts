@@ -1,48 +1,85 @@
-import mongoose from 'mongoose';
+import mongoose, { Document, Schema, model } from "mongoose";
 
-const Schema = mongoose.Schema;
+// Interface for the Country model
+export interface ICountry extends Document {
+  name: string; // Country name (e.g., United States)
+  isoCode2: string; // 2-character ISO code (e.g., US)
+  isoCode3: string; // 3-character ISO code (e.g., USA)
+  addressFormat: string; // Custom address format for the country
+  postcodeRequired: boolean; // Whether postal code is required or not
+  status: boolean; // Whether the country is active/enabled
+  currency: string; // Default currency used in this country
+  taxRate: number; // Default tax rate applied to transactions
+  timeZone: string; // Timezone used in this country
+  region: string; // Region (e.g., North America)
+  shippingEnabled: boolean; // Whether shipping to/from this country is allowed
+  createdAt: Date; // When the country record was created
+  updatedAt: Date; // When the country record was last updated
+}
 
-const CountrySchema = new Schema({
+// Country Schema Definition
+const countrySchema = new Schema<ICountry>({
   name: {
     type: String,
-    required: [true, 'Country name is required'],
+    required: true,
     trim: true,
-    minlength: [2, 'Country name must be at least 2 characters long'],
-    maxlength: [100, 'Country name must be less than 100 characters'],
   },
-  iso_code_2: {
+  isoCode2: {
     type: String,
-    required: [true, 'ISO Code 2 is required'],
+    required: true,
     trim: true,
-    uppercase: true,
-    minlength: [2, 'ISO Code 2 must be exactly 2 characters'],
-    maxlength: [2, 'ISO Code 2 must be exactly 2 characters'],
-    match: [/^[A-Z]{2}$/, 'ISO Code 2 must be two uppercase letters'],
+    minlength: 2,
+    maxlength: 2,
   },
-  iso_code_3: {
+  isoCode3: {
     type: String,
-    required: [true, 'ISO Code 3 is required'],
+    required: true,
     trim: true,
-    uppercase: true,
-    minlength: [3, 'ISO Code 3 must be exactly 3 characters'],
-    maxlength: [3, 'ISO Code 3 must be exactly 3 characters'],
-    match: [/^[A-Z]{3}$/, 'ISO Code 3 must be three uppercase letters'], 
+    minlength: 3,
+    maxlength: 3,
   },
-  address_format: {
+  addressFormat: {
     type: String,
-    trim: true,
-    default: '', 
   },
-  postcode_required: {
+  postcodeRequired: {
     type: Boolean,
-    default: false, 
   },
-  status: {
+  currency: {
+    type: String,
+    required: true,
+    default: "PKR", // Default currency (you can customize this)
+  },
+  taxRate: {
+    type: Number,
+    default: 0.0, // Default tax rate (you can customize this)
+  },
+  shippingEnabled: {
     type: Boolean,
-    default: true, // Country status (active/inactive)
+    default: true,
+  },
+  timeZone: {
+    type: String,
+    default: "UTC", // Default time zone (can be set based on country)
+  },
+  region: {
+    type: String,
+    default: "Global", // e.g., Asia, Europe, North America
+  },
+  createdAt: {
+    type: Date,
+    default: Date.now,
+  },
+  updatedAt: {
+    type: Date,
+    default: Date.now,
   },
 });
 
-const Country = mongoose.model('Country', CountrySchema);
+// Middleware to update `updatedAt` field before each save
+countrySchema.pre<ICountry>("save", function (next) {
+  this.updatedAt = new Date();
+  next();
+});
 
-export default Country;
+// Country Model
+export const Country = model<ICountry>("Country", countrySchema);

@@ -8,8 +8,6 @@ interface IWishlistItem {
   quantity: number;  
   addedAt: Date; 
 }
-
-// Main Interface for Wishlist
 export interface IWishlist extends Document {
   customerId: mongoose.Types.ObjectId;  
   storeId: mongoose.Types.ObjectId; 
@@ -20,7 +18,6 @@ export interface IWishlist extends Document {
   updatedAt: Date;  
 }
 
-// Wishlist Schema Definition
 const wishlistSchema = new Schema<IWishlist>({
   customerId: {
     type: Schema.Types.ObjectId,
