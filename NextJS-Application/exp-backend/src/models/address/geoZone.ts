@@ -1,4 +1,4 @@
-import { Schema, model, Document } from 'mongoose';
+import { Schema, model, Document } from "mongoose";
 
 // Geo Zone schema interface
 interface GeoZoneDocument extends Document {
@@ -11,12 +11,12 @@ interface GeoZoneDocument extends Document {
 // Geo Zone schema definition
 const GeoZoneSchema = new Schema<GeoZoneDocument>({
   name: {
-    type: String,
+    type: String, // AF
     required: true, // Name is required
     trim: true, // Remove whitespace from both ends
   },
   description: {
-    type: String,
+    type: String, // AFG
     required: true, // Description is required
     trim: true, // Remove whitespace from both ends
   },
@@ -31,11 +31,10 @@ const GeoZoneSchema = new Schema<GeoZoneDocument>({
 });
 
 // Middleware to update the updatedAt field before saving
-GeoZoneSchema.pre<GeoZoneDocument>('save', function (next) {
+GeoZoneSchema.pre<GeoZoneDocument>("save", function (next) {
   this.updatedAt = new Date(); // Update updatedAt to the current date
   next(); // Continue with saving
 });
 
 // Create and export Geo Zone model
-const GeoZone = model<GeoZoneDocument>('GeoZone', GeoZoneSchema);
-export default GeoZone;
+export const GeoZone = model<GeoZoneDocument>("GeoZone", GeoZoneSchema);

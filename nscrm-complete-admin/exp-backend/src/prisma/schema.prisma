@@ -1,0 +1,254 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum TokenType {
+  ACCESS
+  REFRESH
+}
+
+enum AuthProvider {
+  GOOGLE
+  LOCAL
+}
+
+enum TaskStatus {
+  PENDING
+  COMPLETED
+  CANCELLED
+}
+
+enum OpportunityStage {
+  QUALIFICATION
+  PROPOSAL
+  NEGOTIATION
+  CLOSED_WON
+  CLOSED_LOST
+}
+
+enum AccessRole {
+  ADMIN
+  SUPERADMIN
+  RESTRICTEDUSER
+  SUPERUSER
+  USER
+}
+
+model User {
+  id                    Int                @id @default(autoincrement())
+  firstName             String
+  lastName              String
+  email                 String             @unique
+  avatar                String?
+  address               String?
+  phoneNumber           String?
+  password              String?
+  googleId              String?            @unique
+  authProviders         AuthProvider[]     @default([LOCAL])
+  isActive              Boolean            @default(false)
+  organizationId        Int?
+  organization          Organization?      @relation(fields: [organizationId], references: [id])
+  ownedOrganizations    Organization[]     @relation("OrganizationOwner") 
+  memberOfOrganizations Organization[]     @relation("OrganizationUsers") 
+  roles                 UserRole[] 
+  organizationRoles     OrganizationRole[]
+  defaultRoleId         Int? // Default role for each organization
+  tokens                Token[]
+  leads                 Lead[] 
+  tasks                 Task[] 
+  activityLogs          ActivityLog[] 
+  leadAccess            LeadAccess[]
+  createdAt             DateTime           @default(now())
+  updatedAt             DateTime           @updatedAt
+  isDeleted             Boolean            @default(false) 
+  TaskAssignment        TaskAssignment[]
+}
+
+model Role {
+  id          Int              @id @default(autoincrement())
+  roleName    String           @unique
+  description String?
+  permissions RolePermission[] 
+  users       UserRole[] 
+}
+
+model UserRole {
+  id     Int  @id @default(autoincrement())
+  userId Int
+  roleId Int
+  user   User @relation(fields: [userId], references: [id])
+  role   Role @relation(fields: [roleId], references: [id])
+
+  @@unique([userId, roleId])
+}
+
+model Permission {
+  id             Int              @id @default(autoincrement())
+  permissionName String           @unique
+  roles          RolePermission[] 
+}
+
+model RolePermission {
+  roleId       Int
+  permissionId Int
+  role         Role       @relation(fields: [roleId], references: [id])
+  permission   Permission @relation(fields: [permissionId], references: [id])
+
+  @@id([roleId, permissionId])
+}
+
+model Organization {
+  id               Int                @id @default(autoincrement())
+  name             String
+  ownerId          Int
+  owner            User               @relation("OrganizationOwner", fields: [ownerId], references: [id]) 
+  users            User[]             @relation("OrganizationUsers") 
+  leads            Lead[] 
+  createdAt        DateTime           @default(now())
+  updatedAt        DateTime           @updatedAt
+  isDeleted        Boolean            @default(false)
+  OrganizationRole OrganizationRole[]
+  User             User[]
+}
+
+model OrganizationRole {
+  id             Int          @id @default(autoincrement())
+  userId         Int
+  organizationId Int
+  role           AccessRole
+  user           User         @relation(fields: [userId], references: [id])
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, organizationId])
+}
+
+model Lead {
+  id             Int           @id @default(autoincrement())
+  companyName    String
+  industry       String?
+  status         String?       @default("Potential")
+  phone          String?
+  email          String?
+  source         String?
+  website        String?
+  description    String?
+  userId         Int
+  User           User          @relation(fields: [userId], references: [id], onDelete: Cascade) 
+  organizationId Int
+  organization   Organization  @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  leadAccess     LeadAccess[] 
+  contacts       Contact[] 
+  opportunities  Opportunity[] 
+  notes          Note[] 
+  tasks          Task[]
+  activityLogs   ActivityLog[] 
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+  isDeleted      Boolean       @default(false) 
+}
+
+model LeadAccess {
+  id        Int        @id @default(autoincrement())
+  userId    Int
+  User      User       @relation(fields: [userId], references: [id], onDelete: Cascade) 
+  leadId    Int
+  Lead      Lead       @relation(fields: [leadId], references: [id], onDelete: Cascade)
+  role      AccessRole
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+
+  @@unique([userId, leadId])
+}
+
+model Token {
+  id        Int       @id @default(autoincrement())
+  token     String    @unique
+  userId    Int
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  type      TokenType
+  expiresAt DateTime
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  @@index([userId], map: "token_user_id_idx")
+}
+
+model Contact {
+  id             Int           @id @default(autoincrement())
+  contactName    String
+  title          String?
+  email          String?
+  phone          String?
+  position       String?
+  contactDetails String?
+  leadId         Int
+  Lead           Lead          @relation(fields: [leadId], references: [id], onDelete: Cascade)
+  activityLogs   ActivityLog[]
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+  isDeleted      Boolean       @default(false)
+}
+
+model Opportunity {
+  id        Int              @id @default(autoincrement())
+  title     String?
+  amount    Float?
+  stage     OpportunityStage @default(QUALIFICATION)
+  closeDate DateTime?
+  leadId    Int
+  Lead      Lead             @relation(fields: [leadId], references: [id], onDelete: Cascade)
+  createdAt DateTime         @default(now())
+  updatedAt DateTime         @updatedAt
+  isDeleted Boolean          @default(false) 
+}
+
+model Note {
+  id        Int      @id @default(autoincrement())
+  content   String?
+  leadId    Int
+  Lead      Lead     @relation(fields: [leadId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  isDeleted Boolean  @default(false)
+}
+
+model Task {
+  id              Int              @id @default(autoincrement())
+  title           String?
+  description     String?
+  dueDate         DateTime?
+  status          TaskStatus       @default(PENDING)
+  leadId          Int
+  Lead            Lead             @relation(fields: [leadId], references: [id], onDelete: Cascade)
+  userId          Int
+  User            User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  taskAssignments TaskAssignment[]
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+}
+
+model TaskAssignment {
+  taskId Int
+  userId Int
+  Task   Task @relation(fields: [taskId], references: [id])
+  User   User @relation(fields: [userId], references: [id])
+
+  @@id([taskId, userId])
+}
+
+model ActivityLog {
+  id        Int      @id @default(autoincrement())
+  action    String
+  leadId    Int?
+  contactId Int?
+  Lead      Lead?    @relation(fields: [leadId], references: [id], onDelete: Cascade) 
+  Contact   Contact? @relation(fields: [contactId], references: [id], onDelete: Cascade) 
+  createdAt DateTime @default(now())
+  User      User?    @relation(fields: [userId], references: [id])
+  userId    Int?
+}

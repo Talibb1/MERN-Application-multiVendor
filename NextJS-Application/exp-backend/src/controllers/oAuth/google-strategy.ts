@@ -1,7 +1,7 @@
 import passport from 'passport';
 import { Strategy as GoogleStrategy, Profile } from 'passport-google-oauth20';
 import { PrismaClient, User } from '@prisma/client';
-import generateTokens from '../../utils/generateToken/generateToken';
+import generateTokens from '../../utils/generate/generateToken';
 import dotenv from 'dotenv';
 
 dotenv.config();

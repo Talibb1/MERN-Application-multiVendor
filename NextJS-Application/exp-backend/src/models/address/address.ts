@@ -61,6 +61,4 @@ const AddressSchema: Schema<IAddress> = new Schema({
 });
 
 // Create Address model
-const Address = mongoose.model<IAddress>("Address", AddressSchema);
-
-export default Address;
+export const Address = mongoose.model<IAddress>("Address", AddressSchema);

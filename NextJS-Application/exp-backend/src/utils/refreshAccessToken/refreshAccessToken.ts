@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import { PrismaClient } from "@prisma/client"; 
 import verifyRefreshToken from "./verifyRefreshToken.js";
-import generateTokens from "../generateToken/generateToken.js";
+import generateTokens from "../generate/generateToken.js";
 
 const prisma = new PrismaClient();
 

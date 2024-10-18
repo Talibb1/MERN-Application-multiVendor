@@ -1,0 +1,19 @@
+# Node modules directory
+node_modules
+
+dist
+
+# Logs
+logs
+*.log
+npm-debug.log*
+
+# Ignore any other specific files/directories
+.git
+.gitignore
+README.md
+LICENSE
+
+# local env files
+.env*.local
+.env.production

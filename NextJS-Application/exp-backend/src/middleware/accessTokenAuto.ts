@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 import isTokenExpired from "../utils/refreshAccessToken/isTokenExpired";
 import refreshAccessToken from "../utils/refreshAccessToken/refreshAccessToken";
-import setTokensCookies from "../utils/generateToken/setTokenCookies";
+import setTokensCookies from "../utils/generate/setTokenCookies";
 
 interface RefreshTokenResponse {
   newAccessToken: string;

@@ -27,5 +27,5 @@ const ZoneSchema = new Schema<ZoneDocument>({
 });
 
 // Create and export Zone model
-const Zone = model<ZoneDocument>('Zone', ZoneSchema);
-export default Zone;
+export const Zone = model<ZoneDocument>('Zone', ZoneSchema);
+
