@@ -1,4 +1,4 @@
-# W11stop Ecommerce Revamp
+# W11stop Ecommerce
 
 ## Project Overview
 
@@ -173,7 +173,7 @@ To set up the project, follow these steps:
 
 1. Clone the repository:
    ```bash
-   git clone https://github.com/yourusername/w11stop-ecommerce-revamp.git
+   git clone https://github.com/Talibb1/MERN-Application-multiVendor.git
    ```
 2. Install dependencies:
 ```bash
