@@ -1,6 +1,5 @@
-
-import app from './app';
-import { PORT } from './config/env';
+import app from "./app";
+import { PORT } from "./config/env";
 
 const port = PORT || 8080;
 

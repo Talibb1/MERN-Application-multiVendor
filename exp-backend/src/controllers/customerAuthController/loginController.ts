@@ -1,8 +1,8 @@
 import bcrypt from 'bcrypt';
 import { Request, Response } from 'express';
-import prisma from '../../prisma/prismaClient';
 import generateTokens from '../../utils/generate/generateToken';
 import setTokensCookies from '../../utils/generate/setTokenCookies';
+import { Customer } from '../../models/Customer';
 
 interface LoginRequestBody {
   email: string;
@@ -18,25 +18,19 @@ export const LoginCustomer = async (req: Request<{}, {}, LoginRequestBody>, res:
         message: 'Email and password are required.',
       });
     }
-    const user = await prisma.user.findUnique({
-      where: { email },
-      include: {
-        roles: {
-          include: {
-            role: true,
-          },
-        },
-      },
-    });
 
-    if (!user || !user.password) {
+    // Fetch customer from MongoDB using the email
+    const customer = await Customer.findOne({ email });
+
+    if (!customer || !customer.password) {
       return res.status(404).json({
         status: 'failed',
         message: 'Invalid email or password.',
       });
     }
 
-    const isMatch = await bcrypt.compare(password, user.password);
+    // Compare the provided password with the hashed password stored in the database
+    const isMatch = await bcrypt.compare(password, customer.password);
 
     if (!isMatch) {
       return res.status(401).json({
@@ -44,25 +38,30 @@ export const LoginCustomer = async (req: Request<{}, {}, LoginRequestBody>, res:
         message: 'Invalid email or password.',
       });
     }
-    const { accessToken, refreshToken, accessTokenExp, refreshTokenExp } = await generateTokens(user);
-    setTokensCookies(res, accessToken, refreshToken, accessTokenExp, refreshTokenExp, user.id);
 
-    const roles = user.roles.map(userRole => userRole.role.roleName);
+    // Generate tokens using the customer information
+    const { accessToken, refreshToken, accessTokenExp, refreshTokenExp } = await generateTokens(customer);
 
-    await prisma.user.update({
-      where: { id: user.id },
-      data: { isActive: true },
-    });
+    // Set tokens in cookies
+    setTokensCookies(res, accessToken, refreshToken, accessTokenExp, refreshTokenExp);
+
+    // Update the customer's isActive status in the database
+    customer.isVerified = true; // or any other logic you want to set
+    await customer.save();
+
+    const roles = customer.roles.map(role => role);
+
     return res.status(200).json({
       status: 'success',
       message: 'Login successful.',
-      user: {
-        id: user.id,
-        email: user.email,
-        firstName: user.firstName,
-        lastName: user.lastName,
-        address: user.address,
-        phoneNumber: user.phoneNumber,
+      customer: {
+        id: customer._id,
+        email: customer.email,
+        firstname: customer.firstname,
+        lastname: customer.lastname,
+        telephone: customer.telephone,
+        gender: customer.gender,
+        birthday: customer.birthday,
         roles,
         isActive: true,
       },

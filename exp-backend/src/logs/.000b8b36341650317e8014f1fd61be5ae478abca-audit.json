@@ -1,0 +1,15 @@
+{
+    "keep": {
+        "days": true,
+        "amount": 7
+    },
+    "auditLog": "C:\\Users\\LENOVO THINKPAD\\Documents\\Talib Uddin\\exp-backend\\src\\logs\\.000b8b36341650317e8014f1fd61be5ae478abca-audit.json",
+    "files": [
+        {
+            "date": 1729598422264,
+            "name": "C:\\Users\\LENOVO THINKPAD\\Documents\\Talib Uddin\\exp-backend\\src\\logs\\2024-10-22.error.log",
+            "hash": "35577ab7c72833246bc07922fe2d2ba99e963d75f92323117174fa2c74e042f5"
+        }
+    ],
+    "hashType": "sha256"
+}

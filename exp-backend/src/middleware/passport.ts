@@ -4,7 +4,7 @@ import {
   StrategyOptions,
   VerifiedCallback,
 } from "passport-jwt";
-import { Customer } from "../models/customer";
+import { Customer } from "../models/Customer";
 import express from "express";
 import passport from "passport";
 import dotenv from "dotenv";

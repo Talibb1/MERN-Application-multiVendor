@@ -1,13 +1,13 @@
 import { Request, Response } from "express";
 import bcrypt from "bcrypt";
 import axios from "axios"; // Import Axios for API requests
-import { Customer } from "../../models/customer";
-import { Country } from "../../models/address"; // Import Country model
+import { Customer } from "../../models/Customer";
+import { Country } from "../../models/Address"; // Import Country model
 import { SALT } from "../../config/env"; // Import pepper for OTP hashing
 import { generateOtp, hashOtp, saveOtpToDatabase } from "../../utils/generate/generateOtp"; // OTP related imports
-import { Otp } from "../../models/otpVerification"; // OTP model import
+import { Otp } from "../../models/OtpVerification"; // OTP model import
 import { randomBytes } from "crypto"; // For token generation
-import { sendOtpEmail } from "../Utils/EmailSend/SendOtp/emailUtils"; // Import for sending OTP email
+import { sendEmail } from "../../utils/sentEmailGmail/emailService";
 
 export const RegisterCustomer = async (req: Request, res: Response): Promise<Response> => {
   const { firstname, lastname, email, password, acceptedTerms, telephone } = req.body;
@@ -125,7 +125,7 @@ export const RegisterCustomer = async (req: Request, res: Response): Promise<Res
     await saveOtpToDatabase(Otp, savedCustomer._id, "Customer", hashedOtp, hashedToken); // OTP ko database mein save karein
 
     // **Send OTP Email**
-    await sendOtpEmail(email, otp, firstname); // OTP aur user ka naam bhejein
+    await  sendEmail('otpTemplate', { email, otp, firstname });
 
     // Return successful response with customer data and OTP instructions
     return res.status(201).json({

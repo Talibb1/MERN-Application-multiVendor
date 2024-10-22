@@ -1,6 +1,6 @@
 import bcrypt from "bcrypt";
 import mongoose from "mongoose";
-import { Otp } from "../../models/otpVerification";
+import { Otp } from "../../models/OtpVerification";
 
 // Function to generate random OTP
 export const generateOtp = (): string => Math.floor(1000 + Math.random() * 9000).toString();

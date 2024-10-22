@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import prisma from '../../prisma/prismaClient';
+import { Customer } from '../../models/Customer'; // Ensure to import your Customer model
 
 export const LogoutCustomer = async (req: Request, res: Response) => {
   try {
@@ -11,32 +11,31 @@ export const LogoutCustomer = async (req: Request, res: Response) => {
         message: "Refresh token is missing",
       });
     }
-    const tokenRecord = await prisma.token.findUnique({
-      where: {
-        token: refreshToken,
-      },
+
+    // Find customer based on the refresh token
+    const customer = await Customer.findOne({
+      refreshTokens: { $elemMatch: { token: refreshToken } }, 
     });
 
-    if (!tokenRecord || tokenRecord.type !== "REFRESH") {
+    if (!customer) {
       return res.status(404).json({
         status: "failed",
         message: "Refresh token not found or invalid",
       });
     }
 
-    await prisma.token.delete({
-      where: { token: refreshToken },
-    });
+    // Remove the refresh token from the customer's refreshTokens array
+    customer.refreshTokens = customer.refreshTokens.filter(rt => rt.token !== refreshToken);
+    await customer.save(); // Save the updated customer document
 
-    await prisma.user.update({
-      where: { id: tokenRecord.userId },
-      data: { isActive: false },
-    });
+    // Optionally set isActive to false if required
+    customer.isActive = false;
+    await customer.save();
 
+    // Clear cookies
     res.clearCookie("accessToken");
     res.clearCookie("refreshToken");
     res.clearCookie("isAuth");
-    res.clearCookie("userId");
 
     return res.status(200).json({
       status: "success",

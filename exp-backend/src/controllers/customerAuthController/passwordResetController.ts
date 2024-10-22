@@ -1,13 +1,11 @@
 import { Request, Response } from 'express';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
-import { PrismaClient } from '@prisma/client';
-import { SALT,JWT_ACCESS_KEY } from '../../constants';
-
-const prisma = new PrismaClient();
+import { Customer } from '../../models/Customer'; // Ensure to import your Customer model
+import { SALT, JWT_ACCESS_KEY } from '../../config/env';
 
 interface PasswordResetRequestBody {
-  _id: number;
+  _id: string;
   token: string;
   Password: string;
   ConfirmPassword: string;
@@ -40,12 +38,10 @@ export const PasswordResetCustomer = async (req: Request<{}, {}, PasswordResetRe
       });
     }
 
-    // Find user by ID
-    const user = await prisma.user.findUnique({
-      where: { id: _id },
-    });
+    // Find customer by ID
+    const customer = await Customer.findById(_id); // Use Customer model to find the customer
 
-    if (!user) {
+    if (!customer) {
       return res.status(404).json({
         status: 'failed',
         message: 'User not found',
@@ -53,18 +49,15 @@ export const PasswordResetCustomer = async (req: Request<{}, {}, PasswordResetRe
     }
 
     // Verify token
-    const newSecret = user.id.toString() + JWT_ACCESS_KEY;
+    const newSecret = customer.id.toString() + JWT_ACCESS_KEY;
     jwt.verify(token, newSecret);
 
     // Hash the new password
     const salt = await bcrypt.genSalt(Number(SALT));
     const hashedPassword = await bcrypt.hash(Password, salt);
 
-    // Update the user's password
-    await prisma.user.update({
-      where: { id: user.id },
-      data: { password: hashedPassword },
-    });
+    // Update the customer's password
+    await Customer.findByIdAndUpdate(_id, { password: hashedPassword }); // Use Customer model to update the password
 
     return res.status(200).json({
       status: 'success',

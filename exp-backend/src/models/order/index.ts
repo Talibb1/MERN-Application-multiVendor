@@ -1,4 +1,4 @@
-export * from './order
+export * from './order';
 export * from './order_history';
 export * from './order_option';
 export * from './order_product';

@@ -1,7 +1,24 @@
 import { createLogger, format, transports } from 'winston';
+import DailyRotateFile from 'winston-daily-rotate-file';
 import path from 'path';
-const logFilePath = path.join(__dirname, '../logs/error.log');
+import { fileURLToPath } from 'url';
 
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+// Log file path
+const logFilePath = path.join(__dirname, '../logs/%DATE%.error.log');
+
+const transport = new DailyRotateFile({
+    filename: logFilePath,
+    datePattern: 'YYYY-MM-DD',
+    zippedArchive: true, // Old logs will be zipped
+    maxSize: '200m', // Maximum size of a log file
+    maxFiles: '7d', // Keep logs for 7 days
+    level: 'error'
+});
+
+// Logger configuration
 const logger = createLogger({
     level: 'error',
     format: format.combine(
@@ -12,7 +29,7 @@ const logger = createLogger({
         })
     ),
     transports: [
-        new transports.File({ filename: logFilePath, level: 'error' }),
+        transport, // DailyRotateFile transport
         new transports.Console({
             format: format.combine(
                 format.colorize(),

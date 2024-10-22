@@ -14,7 +14,6 @@ export const connectToDatabase = async (MONGODB_URI: string) => {
       message: 'Database connection error',
       stack: error.stack, 
     });
-    
     console.error('Database connection error:', error.message);
     throw new Error('Failed to connect to the database. Please check your connection and try again.');
   }

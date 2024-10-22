@@ -1,1 +1,1 @@
-export * from './otp.model';
+export * from './Otp.model';

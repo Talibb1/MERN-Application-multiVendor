@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from "express";
 import bcrypt from "bcrypt";
-import { Customer } from "../../models/customer";
+import { Customer } from "../../models/Customer";
 import { SALT } from "../../config";
 import { AppError } from "../../middleware/errors";
 import logger from "../../logs/logger";

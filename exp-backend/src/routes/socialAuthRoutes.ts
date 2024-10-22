@@ -1,6 +1,6 @@
 import passport from "passport";
 import express, { Request, Response, Router } from "express";
-import setTokensCookies from '../utils/generate/generateToken';
+import setTokensCookies from '../utils/generate/setTokenCookies';
 import { NEXT_API_BASE_URL } from "../config/env";
 
 interface AuthenticatedUser {
@@ -42,3 +42,4 @@ export const createGoogleAuthRoutes = (): Router => {
 
   return router;
 };
+

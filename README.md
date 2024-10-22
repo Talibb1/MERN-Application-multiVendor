@@ -182,7 +182,7 @@ To set up the project, follow these steps:
 
 3. Start the server:
 ```bash
-   npm start
+   npm run dev
 ```
 
 ### Key Changes Made:

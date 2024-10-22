@@ -1,6 +1,6 @@
 import { sendEmailParams } from "../../../types/emailTypes/emailTypes";
 
-export const resetPasswordTemplate = (params: sendEmailParams) => ({
+export const passwordResetTemplate = (params: sendEmailParams) => ({
   subject: `Your OTP code for ${params.name}`,
   bodyText: `Hello ${params.name},\nYour OTP code is: ${params.otp}\nPlease use this to verify your account.`,
   bodyHtml: `<!DOCTYPE html>

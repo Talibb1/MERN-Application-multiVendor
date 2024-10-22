@@ -21,6 +21,8 @@ export interface ICustomer extends Document {
   email: string;
   emailOld: string;
   telephone?: string;
+  gender?: string;
+  birthday?: string;
   faxnumber?: string;
   password?: string;
   googleId?: string;
@@ -30,8 +32,13 @@ export interface ICustomer extends Document {
   roles: CustomerRole[];
   newsletter: boolean;
   status: boolean;
+  isActive: boolean;
   isVerified: boolean;
-  refreshTokens: string;
+  blacklisted: boolean;
+  refreshTokens: {
+    token: string;
+    expiresAt: Date;
+  }[];
   safe?: boolean;
   code?: string;
   twoFactorEnabled?: boolean;
@@ -86,6 +93,15 @@ const CustomerSchema: Schema<ICustomer> = new Schema({
       "Telephone number must be between 10 to 15 digits",
     ],
   },
+  birthday: {
+    type: Date,
+    sparse: true,
+  },
+  gender: {
+    type: String,
+    enum: ["Male", "Female"],
+    sparse: true,
+  },
   faxnumber: {
     type: String,
     sparse: true,
@@ -130,15 +146,29 @@ const CustomerSchema: Schema<ICustomer> = new Schema({
     default: false,
     index: true,
   },
+  isActive: {
+    type: Boolean,
+    default: false,
+    index: true,
+  },
   isVerified: {
+    type: Boolean,
+    default: false,
+    index: true,
+  },
+  blacklisted: {
     type: Boolean,
     default: false,
     index: true,
   },
   refreshTokens: [
     {
-      token: String,
-      expiresAt: Date,
+      token: {
+        type: String,
+      },
+      expiresAt: {
+        type: Date,
+      },
     },
   ],
   safe: {
@@ -157,7 +187,7 @@ const CustomerSchema: Schema<ICustomer> = new Schema({
   },
   acceptedTerms: {
     type: Boolean,
-    required: true, 
+    required: true,
     default: false,
   },
   createdAt: {

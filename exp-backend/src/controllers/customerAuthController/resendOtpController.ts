@@ -1,15 +1,16 @@
 import { Request, Response } from "express";
-import { Otp } from "../../models/otpVerification"; // Import the OTP model
-import { Customer } from "../../models/customer"; 
+import { Otp } from "../../models/OtpVerification"; // Import the OTP model
+import { Customer } from "../../models/Customer"; 
 import { generateOtp, hashOtp, saveOtpToDatabase } from "../../utils/generate/generateOtp"; 
-import { sendOtpEmail } from "../../utils/sentEmail(Gmail)/sendEmail"; // Function to send OTP email
+import { sendEmail } from "../../utils/sentEmailGmail/emailService"; // Function to send OTP email
 import { SALT } from "../../config/env"; // Only using SALT now
-
+import logger from "../../logs/logger"; // Add logger for better error tracking
 
 export const ResendCustomerOtp = async (req: Request, res: Response): Promise<Response> => {
   try {
     const { email } = req.body;
 
+    // Check if email is provided
     if (!email) {
       return res.status(400).json({
         status: "failed",
@@ -37,27 +38,31 @@ export const ResendCustomerOtp = async (req: Request, res: Response): Promise<Re
     // Generate a new OTP
     const otp = generateOtp();
     const token = generateOtp(); // Token is also randomly generated
-    const hashedOtp = await hashOtp(otp, Number(SALT)); // Only salt used, no pepper
-    const hashedToken = await hashOtp(token, Number(SALT)); // Same here
+    const hashedOtp = await hashOtp(otp, Number(SALT)); // Only salt used
+    const hashedToken = await hashOtp(token, Number(SALT)); // Same for token
 
-    // Remove any existing OTP for this customer
-    await Otp.deleteMany({ userId: customer._id, userType: "Customer" });
+    // Remove any existing OTP for this customer (clean up old records)
+    await Otp.deleteMany({ CustomerId: customer._id, userType: "Customer" });
 
     // Save the new OTP and token to the database
     await saveOtpToDatabase(Otp, customer._id, "Customer", hashedOtp, hashedToken);
 
     // Send the new OTP to customer's email
-    await sendOtpEmail(email, otp, customer.firstname);
+    const customerName = customer.firstname; // Extract customer name
+    await sendEmail('otpTemplate', { email, otp, name: customerName });
 
     return res.status(200).json({
       status: "success",
       message: "A new OTP has been sent to your email.",
     });
   } catch (error) {
-    console.error("Error during OTP resend:", error);
+    // Log the error with more details
+    logger.error("Error during OTP resend:", error);
+
+    // Send an appropriate response to the client
     return res.status(500).json({
       status: "failed",
-      message: "An error occurred while processing your request.",
+      message: "An error occurred while processing your request. Please try again later.",
     });
   }
 };

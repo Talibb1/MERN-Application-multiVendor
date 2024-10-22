@@ -1,6 +1,6 @@
 import jwt from 'jsonwebtoken';
 import { JWT_REFRESH_KEY, JWT_ACCESS_KEY } from '../../config/env';
-import { Customer } from '../../models/customer';
+import { Customer } from '../../models/Customer';
 
 interface Tokens {
   accessToken: string;

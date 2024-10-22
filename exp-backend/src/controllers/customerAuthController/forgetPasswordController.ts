@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
-import { sendPasswordResetEmail } from "../../services/emailService";
-import { Customer } from "../../models/customer";
+import { passwordResetTemplate } from "../../utils/sentEmailGmail/emailService";
+import { Customer } from "../../models/Customer";
 import { AppError } from "../../middleware/errors";
 import logger from "../../logs/logger";
 import { JWT_ACCESS_KEY } from "../../config";
@@ -40,7 +40,7 @@ export const ForgetCustomerPassword = async (
     });
 
     // Send password reset email
-    await sendPasswordResetEmail(customer.email, token, customer.firstName);
+    // await passwordResetTemplate(customer.email, token, customer.firstName);
 
     return res.status(200).json({
       status: "success",
