@@ -3,11 +3,11 @@ import cors from "cors";
 import cookieParser from "cookie-parser";
 import passport from "passport";
 import router from "./routes/userRoutes";
+import './middleware/passport';
+import './controllers/oAuth/google-strategy';
 import { MONGODB_URI, NEXT_API_BASE_URL, connectToDatabase } from "./config";
 import { notFoundHandler, globalErrorHandler } from "./middleware/errors";
-// import { createGoogleAuthRoutes } from './routes/socialAuthRoutes';
-// import './middleware/passport';
-// import './controllers/oAuth/google-strategy';
+import { createGoogleAuthRoutes, createAppleAuthRoutes, createFacebookAuthRoutes } from "./middleware/socialAuthMiddleware";
 
 const app = express();
 
@@ -48,7 +48,9 @@ connectToDatabase(MONGODB_URI!).catch((error) => {
 // Routes setup
 app.use("/api", router);
 
-// Authentication Routes (Google)
-// app.use(createGoogleAuthRoutes());
+// Use the auth routes
+app.use(createGoogleAuthRoutes());
+app.use(createFacebookAuthRoutes());
+app.use(createAppleAuthRoutes());
 
 export default app;

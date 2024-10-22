@@ -1,6 +1,6 @@
 import jwt from 'jsonwebtoken';
-import prisma from '../../prisma/prismaClient';
 import { JWT_REFRESH_KEY, JWT_ACCESS_KEY } from '../../config/env';
+import { Customer } from '../../models/customer';
 
 interface Tokens {
   accessToken: string;
@@ -10,12 +10,12 @@ interface Tokens {
 }
 
 interface UserPayload {
-  id: number;
+  id: string; // Assuming your customer ID is a string (ObjectId)
 }
 
-const generateTokens = async (user: UserPayload): Promise<Tokens> => {
+const generateTokens = async (customer: UserPayload): Promise<Tokens> => {
   try {
-    const payload = { id: user.id };
+    const payload = { id: customer.id };
 
     const accessTokenExp = Math.floor(Date.now() / 1000) + 60 * 1;
     const accessToken = jwt.sign({ ...payload, exp: accessTokenExp }, JWT_ACCESS_KEY as string);
@@ -23,20 +23,24 @@ const generateTokens = async (user: UserPayload): Promise<Tokens> => {
     const refreshTokenExp = Math.floor(Date.now() / 1000) + 60 * 60 * 24 * 7;
     const refreshToken = jwt.sign({ ...payload, exp: refreshTokenExp }, JWT_REFRESH_KEY as string);
     
-    await prisma.token.deleteMany({
-      where: {
-        userId: user.id,
-      },
-    });
-    
-    await prisma.token.create({
-      data: {
-        userId: user.id,
-        token: refreshToken,
-        type: 'REFRESH', 
-        expiresAt: new Date(refreshTokenExp * 1000), 
-      },
-    });
+    // Remove existing refresh tokens for the customer
+    await Customer.updateOne(
+      { _id: customer.id },
+      { $set: { refreshTokens: [] } } // Clear old refresh tokens
+    );
+
+    // Save the new refresh token in the customer document
+    await Customer.updateOne(
+      { _id: customer.id },
+      {
+        $push: {
+          refreshTokens: {
+            token: refreshToken,
+            expiresAt: new Date(refreshTokenExp * 1000),
+          },
+        },
+      }
+    );
 
     return { accessToken, refreshToken, accessTokenExp, refreshTokenExp };
   } catch (error) {

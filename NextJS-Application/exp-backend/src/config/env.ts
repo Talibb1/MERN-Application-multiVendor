@@ -17,8 +17,10 @@ export const GOOGLE_CLIENT_SECRET: string | undefined = process.env.GOOGLE_CLIEN
 export const FACEBOOK_APP_ID: string | undefined = process.env.FACEBOOK_APP_ID;
 export const FACEBOOK_APP_SECRET: string | undefined = process.env.FACEBOOK_APP_SECRET;
 // Apple Email Configuration
+export const APPLE_CLIENT_ID: string | undefined = process.env.APPLE_CLIENT_ID;
+export const APPLE_TEAM_ID: string | undefined = process.env.APPLE_TEAM_ID;
 export const APPLE_KEY_ID: string | undefined = process.env.APPLE_KEY_ID;
-export const APPLE_SECRET: string | undefined = process.env.APPLE_SECRET;
+export const APPLE_PRIVATE_KEY: string | undefined = process.env.APPLE_PRIVATE_KEY;
 // AWS SES Email Configuration
 export const REGION: string | undefined = process.env.REGION;
 export const ACCESSKEYID: string | undefined = process.env.ACCESSKEYID;

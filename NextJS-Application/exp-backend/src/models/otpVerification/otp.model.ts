@@ -2,7 +2,7 @@ import mongoose, { Document, Schema } from "mongoose";
 
 export interface IOtpVerification extends Document {
   CustomerId?: mongoose.Types.ObjectId; // Optional, as it might not be used for all user types
-  userId?: mongoose.Types.ObjectId; // Optional, as it might not be used for all user types
+  sellerId?: mongoose.Types.ObjectId; // Optional, as it might not be used for all user types
   userType: "Customer" | "Seller"; // Only "Customer" or "Seller" allowed
   otp: string;
   token: string;
@@ -16,7 +16,7 @@ const otpSchema: Schema<IOtpVerification> = new Schema({
     type: mongoose.Schema.Types.ObjectId,
     refPath: "Customer", // Dynamic reference to either Customer or Seller
   },
-  userId: {
+  sellerId: {
     type: mongoose.Schema.Types.ObjectId,
     refPath: "Seller", // Dynamic reference to either Customer or Seller
   },

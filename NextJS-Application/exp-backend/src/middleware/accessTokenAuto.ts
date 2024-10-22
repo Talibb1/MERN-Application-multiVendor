@@ -8,7 +8,6 @@ interface RefreshTokenResponse {
   newRefreshToken: string;
   newAccessTokenExp: number;
   newRefreshTokenExp: number;
-  userId: number;
 }
 
 const accessTokenAutoRefresh = async (
@@ -34,7 +33,6 @@ const accessTokenAutoRefresh = async (
         newRefreshToken,
         newAccessTokenExp,
         newRefreshTokenExp,
-        userId,
       }: RefreshTokenResponse = await refreshAccessToken(req, res);
       setTokensCookies(
         res,
@@ -42,7 +40,6 @@ const accessTokenAutoRefresh = async (
         newRefreshToken,
         newAccessTokenExp,
         newRefreshTokenExp,
-        userId
       );
       req.headers["authorization"] = `Bearer ${newAccessToken}`;
     }

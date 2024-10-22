@@ -14,6 +14,12 @@ export enum CustomerRole {
 
 // Interface for the customer document
 export interface ICustomer extends Document {
+  // customer_group_id: mongoose.Types.ObjectId;
+  // store_id: mongoose.Types.ObjectId;
+  // language_id: mongoose.Types.ObjectId;
+  // address_id: mongoose.Types.ObjectId;
+  // devices_id: mongoose.Types.ObjectId;
+  // add_to_cart: mongoose.Types.ObjectId;
   countryId: mongoose.Types.ObjectId;
   avatar: string;
   firstname: string;
@@ -31,20 +37,52 @@ export interface ICustomer extends Document {
   newsletter: boolean;
   status: boolean;
   isVerified: boolean;
-  refreshTokens: string;
+  token: string;
   safe?: boolean;
   code?: string;
   twoFactorEnabled?: boolean;
-  acceptedTerms: boolean;
   createdAt: Date;
   updatedAt: Date;
 }
 
 const CustomerSchema: Schema<ICustomer> = new Schema({
+  // customer_group_id: {
+  //   type: mongoose.Schema.Types.ObjectId,
+  //   ref: "CustomerGroup",
+  //   required: true,
+  //   index: true, // Index for efficient lookups
+  // },
+  // store_id: {
+  //   type: mongoose.Schema.Types.ObjectId,
+  //   ref: "Store",
+  //   required: true,
+  //   index: true, // Index for efficient lookups
+  // },
+  // language_id: {
+  //   type: mongoose.Schema.Types.ObjectId,
+  //   ref: "Language",
+  //   required: true,
+  //   index: true, // Index for efficient lookups
+  // },
+  // address_id: {
+  //   type: mongoose.Schema.Types.ObjectId,
+  //   ref: "Address",
+  //   index: true, // Index for efficient lookups
+  // },
+  // devices_id: {
+  //   type: mongoose.Schema.Types.ObjectId,
+  //   ref: "Device",
+  //   index: true, // Index for efficient lookups
+  // },
+  // add_to_cart: {
+  //   type: mongoose.Schema.Types.ObjectId,
+  //   ref: "AddToCart",
+  //   index: true, // Index for faster cart item retrieval
+  // },
   countryId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "CustomerCountryData",
-    index: true,
+    index: true, // Index for faster cart item retrieval
   },
   avatar: {
     type: String,
@@ -69,7 +107,7 @@ const CustomerSchema: Schema<ICustomer> = new Schema({
     unique: true,
     trim: true,
     match: [/\S+@\S+\.\S+/, "Please provide a valid email address"],
-    index: true,
+    index: true, // Index for efficient search and uniqueness
   },
   emailOld: {
     type: String,
@@ -79,12 +117,8 @@ const CustomerSchema: Schema<ICustomer> = new Schema({
   },
   telephone: {
     type: String,
-    required: true,
     sparse: true,
-    match: [
-      /^[0-9]{10,15}$/,
-      "Telephone number must be between 10 to 15 digits",
-    ],
+    match: [/^[0-9]{10,15}$/, "Telephone number must be between 10 to 15 digits"],
   },
   faxnumber: {
     type: String,
@@ -114,33 +148,32 @@ const CustomerSchema: Schema<ICustomer> = new Schema({
   authProvider: {
     type: [String],
     required: true,
-    enum: ["LOCAL", "GOOGLE", "FACEBOOK", "APPLE"],
+    enum: ["LOCAL", "GOOGLE", "FACEBOOK", "APPLE"], // Ensure only valid auth providers
   },
   roles: {
     type: [String],
     enum: Object.values(CustomerRole),
-    default: [CustomerRole.CUSTOMER],
+    default: [CustomerRole.CUSTOMER], // Default to 'CUSTOMER' role
   },
   newsletter: {
     type: Boolean,
+    default: false,
     sparse: true,
   },
   status: {
     type: Boolean,
     default: false,
-    index: true,
+    index: true, // For faster filtering of active/inactive users
   },
   isVerified: {
     type: Boolean,
     default: false,
-    index: true,
+    index: true, // Useful to quickly filter verified users
   },
-  refreshTokens: [
-    {
-      token: String,
-      expiresAt: Date,
-    },
-  ],
+  token: {
+    type: String,
+    trim: true,
+  },
   safe: {
     type: Boolean,
     default: false,
@@ -155,11 +188,6 @@ const CustomerSchema: Schema<ICustomer> = new Schema({
     type: Boolean,
     default: false,
   },
-  acceptedTerms: {
-    type: Boolean,
-    required: true, 
-    default: false,
-  },
   createdAt: {
     type: Date,
     default: Date.now,
@@ -172,6 +200,6 @@ const CustomerSchema: Schema<ICustomer> = new Schema({
 
 // Index the email field for unique lookups
 CustomerSchema.index({ email: 1 }, { unique: true });
-
-// Create and export the Customer model
+// Create and export the Customer model 
 export const Customer = mongoose.model<ICustomer>("Customer", CustomerSchema);
+

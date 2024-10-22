@@ -23,7 +23,7 @@ const handleAuthCallback = (req: Request, res: Response): void => {
   const { user, accessToken, refreshToken, accessTokenExp, refreshTokenExp } = req.user as AuthenticatedUser;
   const accessTokenExpMs = accessTokenExp.getTime(); 
   const refreshTokenExpMs = refreshTokenExp.getTime(); 
-  setTokensCookies(res, accessToken, refreshToken, accessTokenExpMs, refreshTokenExpMs, user.id);
+  setTokensCookies(res, accessToken, refreshToken, accessTokenExpMs, refreshTokenExpMs);
   res.redirect(`${NEXT_API_BASE_URL}`);
 };
 export const createGoogleAuthRoutes = (): Router => {

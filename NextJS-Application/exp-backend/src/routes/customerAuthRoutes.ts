@@ -10,7 +10,7 @@ import {
   PasswordResetCustomer,
   RegisterCustomer,
   ResendCustomerOtp,
-} from "../controllers/customerAuth";
+} from "../controllers/customer";
 
 router.post("/register", RegisterCustomer);
 router.post("/login", LoginCustomer);
