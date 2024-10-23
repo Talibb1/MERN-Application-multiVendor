@@ -8,6 +8,7 @@ export const notFoundHandler = (req: Request, res: Response, next: NextFunction)
         message: `404 Not Found: ${req.originalUrl}`,
         method: req.method,
         ip: req.ip,
+        headers: req.headers,  // Optionally log headers for debugging
         time: new Date().toISOString(),
     });
     next(new AppError(message, 404));

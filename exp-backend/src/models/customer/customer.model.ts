@@ -19,10 +19,8 @@ export interface ICustomer extends Document {
   firstname: string;
   lastname: string;
   email: string;
-  emailOld: string;
+  // emailOld?: string; 
   telephone?: string;
-  gender?: string;
-  birthday?: string;
   faxnumber?: string;
   password?: string;
   googleId?: string;
@@ -78,29 +76,20 @@ const CustomerSchema: Schema<ICustomer> = new Schema({
     match: [/\S+@\S+\.\S+/, "Please provide a valid email address"],
     index: true,
   },
-  emailOld: {
-    type: String,
-    unique: true,
-    trim: true,
-    match: [/\S+@\S+\.\S+/, "Please provide a valid old email address"],
-  },
+//   emailOld: {
+//     type: String,
+//     unique: true,
+//     sparse: true, // This allows multiple null values
+//     trim: true,
+//     match: [/\S+@\S+\.\S+/, "Please provide a valid old email address"],
+// },
   telephone: {
     type: String,
-    required: true,
     sparse: true,
     match: [
       /^[0-9]{10,15}$/,
       "Telephone number must be between 10 to 15 digits",
     ],
-  },
-  birthday: {
-    type: Date,
-    sparse: true,
-  },
-  gender: {
-    type: String,
-    enum: ["Male", "Female"],
-    sparse: true,
   },
   faxnumber: {
     type: String,
@@ -201,7 +190,7 @@ const CustomerSchema: Schema<ICustomer> = new Schema({
 });
 
 // Index the email field for unique lookups
-CustomerSchema.index({ email: 1 }, { unique: true });
+// CustomerSchema.index({ email: 1 }, { unique: true });
 
 // Create and export the Customer model
 export const Customer = mongoose.model<ICustomer>("Customer", CustomerSchema);

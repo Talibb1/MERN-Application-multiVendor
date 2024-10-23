@@ -15,7 +15,7 @@ import {
 
 const app = express();
 
-// CORS configuration
+// CORS
 const allowedOrigins = [NEXT_API_BASE_URL];
 app.use(
   cors({
@@ -32,15 +32,25 @@ app.use(
   })
 );
 
-// Middleware setup
-app.use(express.json());
-// Cookie parser
-app.use(cookieParser());
-// Passport setup
+// Body parser and cookie parser should be applied before routes
+app.use(express.json()); // Body parser to handle JSON requests
+app.use(cookieParser()); // Cookie parser
+
+// Passport middleware for authentication
 app.use(passport.initialize());
-// Handle undefined routes (404 errors)
+
+// Define routes
+app.use("/api", router);
+
+// Use the auth routes
+app.use(createGoogleAuthRoutes());
+app.use(createFacebookAuthRoutes());
+app.use(createAppleAuthRoutes());
+
+// Handle undefined routes (404 errors) after routes
 app.use(notFoundHandler);
-// Global error handler
+
+// Global error handler (should be the last middleware)
 app.use(globalErrorHandler);
 
 // Connect to MongoDB
@@ -48,13 +58,5 @@ connectToDatabase(MONGODB_URI!).catch((error) => {
   console.error("Error connecting to the database:", error);
   process.exit(1);
 });
-
-// Routes setup
-app.use("/api", router);
-
-// Use the auth routes
-app.use(createGoogleAuthRoutes());
-app.use(createFacebookAuthRoutes());
-app.use(createAppleAuthRoutes());
 
 export default app;

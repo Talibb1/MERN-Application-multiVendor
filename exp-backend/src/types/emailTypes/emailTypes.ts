@@ -1,6 +1,6 @@
 export interface sendEmailParams {
     email: string;
-    name: string;
+    firstname: string;
     to: string;
     customerName: string;
     otp?: string;       // Optional for OTP emails
