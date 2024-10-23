@@ -4,19 +4,16 @@ import mongoose, { Document, Schema, model } from "mongoose";
 export interface ICountry extends Document {
   name: string; // Country name (e.g., United States)
   isoCode2: string; // 2-character ISO code (e.g., US)
-  isoCode3: string; // 3-character ISO code (e.g., USA)
-  addressFormat: string; // Custom address format for the country
-  postalCodeRequired: boolean; // Whether postal code is required or not
+  zipCode: string; // Whether postal code is required or not
   status: boolean; // Whether the country is active/enabled
   currency: string; // Default currency used in this country
   city: string; // Default city (if applicable)
   ip: string; // Default IP address (if applicable)
   organization: string; // ISP or organization name
   location: string; // Coordinates (latitude,longitude)
-  taxRate: number; // Default tax rate applied to transactions
   timeZone: string; // Timezone used in this country
+  isp: string;
   region: string; // Region (e.g., North America)
-  shippingEnabled: boolean; // Whether shipping to/from this country is allowed
   deleted:  boolean; // Whether the country is deleted
   createdAt: Date; // When the country record was created
   updatedAt: Date; // When the country record was last updated
@@ -36,20 +33,9 @@ const countrySchema = new Schema<ICountry>({
     minlength: 2,
     maxlength: 2,
   },
-  isoCode3: {
+  zipCode: {
     type: String,
-    required: true,
-    trim: true,
-    minlength: 3,
-    maxlength: 3,
-  },
-  addressFormat: {
-    type: String,
-    required: true, // Required for better validation
-  },
-  postalCodeRequired: {
-    type: Boolean,
-    default: false, // Default value can be false
+    default: "000",
   },
   currency: {
     type: String,
@@ -72,17 +58,13 @@ const countrySchema = new Schema<ICountry>({
     type: String,
     default: "Unknown", // Default value for organization
   },
-  taxRate: {
-    type: Number,
-    default: 0.0, // Default tax rate (you can customize this)
-  },
-  shippingEnabled: {
-    type: Boolean,
-    default: true,
-  },
   timeZone: {
     type: String,
     default: "UTC", // Default time zone (can be set based on country)
+  },
+  isp: {
+    type: String,
+    default: "Unknown",
   },
   region: {
     type: String,

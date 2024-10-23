@@ -1,0 +1,41 @@
+2024-10-23 02:56:41 PM [31merror[39m: Email is already registered with local credentials. 
+2024-10-23 05:40:43 PM [31merror[39m: Email is already registered with local credentials. 
+2024-10-23 05:47:55 PM [31merror[39m: Email is already registered with local credentials. 
+2024-10-23 05:48:03 PM [31merror[39m: CustomerCountryData validation failed: zipCode: Cast to Boolean failed for value "75950" (type string) at path "zipCode" because of "CastError" 
+2024-10-23 05:51:28 PM [31merror[39m: Email is already registered with local credentials. 
+2024-10-23 05:51:34 PM [31merror[39m: CustomerCountryData validation failed: zipCode: Cast to Boolean failed for value "75950" (type string) at path "zipCode" because of "CastError" 
+2024-10-23 05:52:38 PM [31merror[39m: Email is already registered with local credentials. 
+2024-10-23 06:32:42 PM [31merror[39m: Error sending email: No recipients defined 
+Error: No recipients defined
+    at SMTPConnection._formatError (C:\Users\LENOVO THINKPAD\Documents\Talib Uddin\exp-backend\node_modules\nodemailer\lib\smtp-connection\index.js:807:19)
+    at SMTPConnection._setEnvelope (C:\Users\LENOVO THINKPAD\Documents\Talib Uddin\exp-backend\node_modules\nodemailer\lib\smtp-connection\index.js:1045:34)
+    at SMTPConnection.send (C:\Users\LENOVO THINKPAD\Documents\Talib Uddin\exp-backend\node_modules\nodemailer\lib\smtp-connection\index.js:629:14)
+    at sendMessage (C:\Users\LENOVO THINKPAD\Documents\Talib Uddin\exp-backend\node_modules\nodemailer\lib\smtp-transport\index.js:228:28)
+    at C:\Users\LENOVO THINKPAD\Documents\Talib Uddin\exp-backend\node_modules\nodemailer\lib\smtp-transport\index.js:286:25
+    at SMTPConnection._actionAUTHComplete (C:\Users\LENOVO THINKPAD\Documents\Talib Uddin\exp-backend\node_modules\nodemailer\lib\smtp-connection\index.js:1600:9)
+    at SMTPConnection.<anonymous> (C:\Users\LENOVO THINKPAD\Documents\Talib Uddin\exp-backend\node_modules\nodemailer\lib\smtp-connection\index.js:554:26)
+    at SMTPConnection._processResponse (C:\Users\LENOVO THINKPAD\Documents\Talib Uddin\exp-backend\node_modules\nodemailer\lib\smtp-connection\index.js:991:20)
+    at SMTPConnection._onData (C:\Users\LENOVO THINKPAD\Documents\Talib Uddin\exp-backend\node_modules\nodemailer\lib\smtp-connection\index.js:772:14)
+    at SMTPConnection._onSocketData (C:\Users\LENOVO THINKPAD\Documents\Talib Uddin\exp-backend\node_modules\nodemailer\lib\smtp-connection\index.js:195:44)
+2024-10-23 06:32:42 PM [31merror[39m: Operational Error: Could not send email. Please try again later. 
+Error: Could not send email. Please try again later.
+    at sendEmail (C:\Users\LENOVO THINKPAD\Documents\Talib Uddin\exp-backend\src\utils\sentEmailGmail\emailService.ts:40:11)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async ForgetCustomerPassword (C:\Users\LENOVO THINKPAD\Documents\Talib Uddin\exp-backend\src\controllers\customerAuthController\forgetCustomerPasswordController.ts:56:5)
+2024-10-23 06:33:19 PM [31merror[39m: Error sending email: No recipients defined 
+Error: No recipients defined
+    at SMTPConnection._formatError (C:\Users\LENOVO THINKPAD\Documents\Talib Uddin\exp-backend\node_modules\nodemailer\lib\smtp-connection\index.js:807:19)
+    at SMTPConnection._setEnvelope (C:\Users\LENOVO THINKPAD\Documents\Talib Uddin\exp-backend\node_modules\nodemailer\lib\smtp-connection\index.js:1045:34)
+    at SMTPConnection.send (C:\Users\LENOVO THINKPAD\Documents\Talib Uddin\exp-backend\node_modules\nodemailer\lib\smtp-connection\index.js:629:14)
+    at sendMessage (C:\Users\LENOVO THINKPAD\Documents\Talib Uddin\exp-backend\node_modules\nodemailer\lib\smtp-transport\index.js:228:28)
+    at C:\Users\LENOVO THINKPAD\Documents\Talib Uddin\exp-backend\node_modules\nodemailer\lib\smtp-transport\index.js:286:25
+    at SMTPConnection._actionAUTHComplete (C:\Users\LENOVO THINKPAD\Documents\Talib Uddin\exp-backend\node_modules\nodemailer\lib\smtp-connection\index.js:1600:9)
+    at SMTPConnection.<anonymous> (C:\Users\LENOVO THINKPAD\Documents\Talib Uddin\exp-backend\node_modules\nodemailer\lib\smtp-connection\index.js:554:26)
+    at SMTPConnection._processResponse (C:\Users\LENOVO THINKPAD\Documents\Talib Uddin\exp-backend\node_modules\nodemailer\lib\smtp-connection\index.js:991:20)
+    at SMTPConnection._onData (C:\Users\LENOVO THINKPAD\Documents\Talib Uddin\exp-backend\node_modules\nodemailer\lib\smtp-connection\index.js:772:14)
+    at SMTPConnection._onSocketData (C:\Users\LENOVO THINKPAD\Documents\Talib Uddin\exp-backend\node_modules\nodemailer\lib\smtp-connection\index.js:195:44)
+2024-10-23 06:33:19 PM [31merror[39m: Operational Error: Could not send email. Please try again later. 
+Error: Could not send email. Please try again later.
+    at sendEmail (C:\Users\LENOVO THINKPAD\Documents\Talib Uddin\exp-backend\src\utils\sentEmailGmail\emailService.ts:40:11)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async ForgetCustomerPassword (C:\Users\LENOVO THINKPAD\Documents\Talib Uddin\exp-backend\src\controllers\customerAuthController\forgetCustomerPasswordController.ts:56:5)

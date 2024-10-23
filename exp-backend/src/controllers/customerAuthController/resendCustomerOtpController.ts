@@ -5,6 +5,7 @@ import { generateOtp, hashOtp, saveOtpToDatabase } from "../../utils/generate/ge
 import { sendEmail } from "../../utils/sentEmailGmail/emailService"; // Function to send OTP email
 import { SALT } from "../../config/env"; // Only using SALT now
 import logger from "../../logs/logger"; // Add logger for better error tracking
+import mongoose from "mongoose";
 
 export const ResendCustomerOtp = async (req: Request, res: Response): Promise<Response> => {
   try {
@@ -42,10 +43,8 @@ export const ResendCustomerOtp = async (req: Request, res: Response): Promise<Re
     const hashedToken = await hashOtp(token, Number(SALT)); // Same for token
 
     // Remove any existing OTP for this customer (clean up old records)
-    await Otp.deleteMany({ CustomerId: customer._id, userType: "Customer" });
-
-    // Save the new OTP and token to the database
-    await saveOtpToDatabase(Otp, customer._id, "Customer", hashedOtp, hashedToken);
+    await Otp.deleteMany({ CustomerId: customer._id as mongoose.Types.ObjectId, userType: "Customer" });
+    await saveOtpToDatabase(Otp, customer._id as mongoose.Types.ObjectId, "Customer", hashedOtp, hashedToken);
 
     // Send the new OTP to customer's email
     const customerName = customer.firstname; // Extract customer name

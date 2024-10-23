@@ -1,3 +1,4 @@
+import axios from "axios";
 import { Request, Response } from "express";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
@@ -14,12 +15,16 @@ import { Types } from "mongoose";
 import { sendEmailParams } from "../../types/emailTypes/emailTypes";
 import logger from "../../logs/logger";
 import { AppError } from "../../middleware/errors";
+import { Country } from "../../models/Address";
+
+
 
 export const RegisterCustomer = async (
   req: Request,
   res: Response
 ): Promise<Response> => {
   const { firstname, lastname, email, password, acceptedTerms } = req.body;
+  const userIp = req.ip;
 
   // Validate request parameters
   if (
@@ -88,6 +93,30 @@ export const RegisterCustomer = async (
     // Save the customer in the database
     const savedCustomer = await newCustomer.save();
 
+    // IP se country information fetch karo
+    const ipApiUrl = `http://ip-api.com/json/103.156.137.117`;
+    const response = await axios.get(ipApiUrl);
+    const ipData = response.data;
+    console.log(ipData)
+    if (!ipData || ipData.status !== "success") {
+      throw new AppError("Unable to fetch IP information.", 500);
+    }
+    if (ipData.status === "success") {
+      const countryData = new Country({
+        name: ipData.country || "Unknown",
+        isoCode2: ipData.countryCode || "Unknown", 
+        zipCode: ipData.zip || "Unknown",
+        city: ipData.city || "Unknown",
+        ip: userIp,
+        isp: ipData.isp || "Unknown",
+        location: ipData.lat && ipData.lon ? `${ipData.lat},${ipData.lon}` : "Unknown",
+        organization: ipData.org || "Unknown",
+        timeZone: ipData.timezone || "UTC",
+        region: ipData.regionName || "Unknown",
+      });
+      await countryData.save();
+    }
+
     // Generate OTP
     const otp = generateOtp();
 
@@ -141,6 +170,7 @@ export const RegisterCustomer = async (
         email: savedCustomer.email,
         roles: savedCustomer.roles,
         acceptedTerms: savedCustomer.acceptedTerms,
+        ipAddress: userIp,
       },
       token,
       otpInstructions: "Please verify the OTP sent to your email.",

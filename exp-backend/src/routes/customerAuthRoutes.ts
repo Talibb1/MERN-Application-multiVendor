@@ -3,6 +3,7 @@ const router = express.Router();
 import passport from "passport";
 import accessTokenAutoRefresh from "../middleware/accessTokenAuto";
 import {
+  CancelOtpRequest,
   ChangeCustomerPassword,
   ForgetCustomerPassword,
   LoginCustomer,
@@ -10,6 +11,7 @@ import {
   PasswordResetCustomer,
   RegisterCustomer,
   ResendCustomerOtp,
+  VerifyCustomerOtp,
 } from "../controllers/customerAuthController";
 
 router.post("/register", RegisterCustomer);
@@ -17,6 +19,8 @@ router.post("/login", LoginCustomer);
 router.post("/forgotpassword", ForgetCustomerPassword);
 router.post("/passwordreset", PasswordResetCustomer);
 router.post("/resendotp", ResendCustomerOtp);
+router.post("/verifyotp", VerifyCustomerOtp);
+router.post("/cancelotp", CancelOtpRequest);
 
 router.post(
   "/changepassword",

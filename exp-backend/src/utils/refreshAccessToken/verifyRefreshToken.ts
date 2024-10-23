@@ -50,9 +50,9 @@ const verifyRefreshToken = async (
     };
   } catch (error: any) {
     return {
-      tokenDetails: {} as JwtPayload, // Set to an empty object of type JwtPayload
+      tokenDetails: {} as JwtPayload,
       error: true,
-      message: error.message || "An error occurred while verifying the token", // Provide a fallback message
+      message: error.message || "An error occurred while verifying the token",
     };
   }
 };

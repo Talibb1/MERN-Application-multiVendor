@@ -1,11 +1,19 @@
-import AWS from 'aws-sdk';
+import { SESClient } from '@aws-sdk/client-ses';
+
 import { ACCESSKEYID, REGION, SECRETACCESSKEY } from './env';
 
-AWS.config.update({
-  region: REGION,
-  accessKeyId: ACCESSKEYID,
-  secretAccessKey: SECRETACCESSKEY,
+if (!REGION || !ACCESSKEYID || !SECRETACCESSKEY) {
+  throw new Error('Missing required environment variables');
+}
+
+// SESClient ka instance create karna
+const sesClient = new SESClient({
+  region: REGION as string,
+  credentials: {
+    accessKeyId: ACCESSKEYID as string,
+    secretAccessKey: SECRETACCESSKEY as string,
+  },
 });
 
-export const ses = new AWS.SES();
-
+// Export karna
+export const ses = sesClient;

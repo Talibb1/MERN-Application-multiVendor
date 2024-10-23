@@ -1,6 +1,6 @@
 import transporter from '../../config/googleEmailConfig';
 import { sendEmailParams } from '../../types/emailTypes/emailTypes';
-import  {otpTemplate} from './templates'; // Import your templates
+import  {otpTemplate, welcomeTemplate} from './templates'; // Import your templates
 import  {passwordResetTemplate} from './templates'; // Example for another template
 import logger from '../../logs/logger'; // Winston logger
 import { AppError } from '../../middleware/errors'; // Custom AppError
@@ -9,7 +9,7 @@ import { AppError } from '../../middleware/errors'; // Custom AppError
 const templates = {
   otpTemplate: otpTemplate,
   passwordResetTemplate: passwordResetTemplate,
-  // Add more templates as needed
+  welcomeTemplate: welcomeTemplate,
 };
 
 export const sendEmail = async (emailType: keyof typeof templates, params: sendEmailParams) => {
