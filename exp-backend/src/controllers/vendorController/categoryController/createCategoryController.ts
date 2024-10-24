@@ -3,8 +3,7 @@ import { Category } from "../../../models/Categories";
 import { CategoryDescription } from "../../../models/Categories";
 import { AppError } from "../../../middleware/errors";
 import logger from "../../../logs/logger";
-import { client } from "../../../services/elasticsearch"; // Elasticsearch client
-import { SearchResponse } from "@elastic/elasticsearch/lib/api/types"; // Importing the SearchResponse type
+import stringSimilarity from "string-similarity"; // Add this library to your project (npm install string-similarity)
 
 export const CreateCategory = async (req: Request, res: Response, next: NextFunction) => {
   try {
@@ -28,30 +27,24 @@ export const CreateCategory = async (req: Request, res: Response, next: NextFunc
         message: "Category name is required.",
       });
     }
-
-    // Fuzzy match for similar category names in Elasticsearch
-    const similarCategories: SearchResponse<any> = await client.search({
-      index: 'categories',
-      body: {
-        query: {
-          fuzzy: {
-            categoryName: {
-              value: categoryName,
-              fuzziness: 2, // Adjust fuzziness level based on tolerance
-            },
-          },
-        },
-      },
-    });
-
-    if (similarCategories.hits.hits.length > 0) {
+    const existingCategory = await Category.findOne({ categoryName });
+    if (existingCategory) {
       return res.status(400).json({
-        status: "warning",
-        message: `The category name '${categoryName}' is similar to an existing category. Please choose a more distinct name.`,
+        status: "failed",
+        message: `Category name '${categoryName}' already exists. Please choose a different name.`,
       });
     }
+    const allCategories = await Category.find({});
+    const categoryNames = allCategories.map(cat => cat.categoryName);
+    const similarityThreshold = 0.8; 
 
-    // If parentCategory exists, validate it
+    const matches = stringSimilarity.findBestMatch(categoryName, categoryNames);
+    if (matches.bestMatch.rating >= similarityThreshold) {
+      return res.status(400).json({
+        status: "warning",
+        message: `The category name '${categoryName}' is similar to an existing category '${matches.bestMatch.target}'. Consider using a more distinct name.`,
+      });
+    }
     let newLevel = 0;
     if (parentCategory) {
       const parentCat = await Category.findById(parentCategory);
@@ -76,20 +69,7 @@ export const CreateCategory = async (req: Request, res: Response, next: NextFunc
 
     const savedCategory = await newCategory.save();
 
-    // Index new category in Elasticsearch
-    await client.index({
-      index: 'categories',
-      id: savedCategory._id.toString(), // Ensure _id is a string
-      body: {
-        categoryName,
-        description,
-        meta_title,
-        meta_description,
-        meta_keyword,
-        parentCategory,
-      },
-    });
-
+    // Create category description
     const newCategoryDescription = new CategoryDescription({
       categoryId: savedCategory._id,
       categoryName,
