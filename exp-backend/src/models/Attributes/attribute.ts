@@ -1,24 +1,40 @@
-import mongoose from 'mongoose';
+import { Schema, model, Document } from 'mongoose';
 
-const Schema = mongoose.Schema;
+// Interface for the Attribute model
+export interface AttributeDocument extends Document {
+  name: string;
+  type: string;
+  options?: string[];
+  createdAt: Date;
+  updatedAt: Date;
+}
 
-const AttributeSchema = new Schema({
-  attribute_id: {
-    type: Number,
-    required: [true, 'Attribute ID is required'],
-    unique: true, // Ensure each attribute_id is unique
+// Attribute schema definition
+const AttributeSchema = new Schema<AttributeDocument>({
+  name: {
+    type: String,
+    required: true,
   },
-  attribute_group_id: {
-    type: Number,
-    required: [true, 'Attribute Group ID is required'], 
+  type: {
+    type: String,
+    enum: ['text', 'dropdown', 'checkbox', 'radio', 'textarea', 'file', 'date', 'number', 'email', 'url'],
+    required: true,
   },
-  sort_order: {
-    type: Number,
-    default: 0, // Default sort order
-    min: [0, 'Sort order cannot be less than 0'], 
+  options: {
+    type: [String],
+    required: function () {
+      return this.type === 'dropdown' || this.type === 'checkbox' || this.type === 'radio';
+    },
+  },
+  createdAt: {
+    type: Date,
+    default: Date.now,
+  },
+  updatedAt: {
+    type: Date,
+    default: Date.now,
   },
 });
 
-const Attribute = mongoose.model('Attribute', AttributeSchema);
-
-export default Attribute;
+// Export Attribute model
+export const Attribute = model<AttributeDocument>('Attribute', AttributeSchema);

@@ -1,11 +1,12 @@
 import { Request, Response, NextFunction } from "express";
-import { Category } from "../../../models/categories";
-import { CategoryDescription } from "../../../models/categories";
+import { Category } from "../../../models/Categories";
+import { CategoryDescription } from "../../../models/Categories";
 import { AppError } from "../../../middleware/errors";
 import logger from "../../../logs/logger";
+import { client } from "../../../services/elasticsearch"; // Elasticsearch client
+import { SearchResponse } from "@elastic/elasticsearch/lib/api/types"; // Importing the SearchResponse type
 
-// Create a new category and its description, allowing hierarchical structure
-export const createCategory = async (req: Request, res: Response, next: NextFunction) => {
+export const CreateCategory = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const {
       categoryName,
@@ -21,21 +22,49 @@ export const createCategory = async (req: Request, res: Response, next: NextFunc
       displayOrder,
     } = req.body;
 
-    // Validate if categoryName is provided
     if (!categoryName) {
-      return next(new AppError('Category name is required', 400));
+      return res.status(400).json({
+        status: "failed",
+        message: "Category name is required.",
+      });
     }
-    
-    let newLevel = 0; // Default level for top-level categories
+
+    // Fuzzy match for similar category names in Elasticsearch
+    const similarCategories: SearchResponse<any> = await client.search({
+      index: 'categories',
+      body: {
+        query: {
+          fuzzy: {
+            categoryName: {
+              value: categoryName,
+              fuzziness: 2, // Adjust fuzziness level based on tolerance
+            },
+          },
+        },
+      },
+    });
+
+    if (similarCategories.hits.hits.length > 0) {
+      return res.status(400).json({
+        status: "warning",
+        message: `The category name '${categoryName}' is similar to an existing category. Please choose a more distinct name.`,
+      });
+    }
+
+    // If parentCategory exists, validate it
+    let newLevel = 0;
     if (parentCategory) {
       const parentCat = await Category.findById(parentCategory);
       if (!parentCat) {
-        return next(new AppError('Parent category not found', 404));
+        return res.status(404).json({
+          status: "failed",
+          message: "Parent category not found",
+        });
       }
-      newLevel = parentCat.level + 1; // Increase the level for subcategories
+      newLevel = parentCat.level + 1;
     }
 
-    // Step 1: Create Category
+    // Create new category
     const newCategory = new Category({
       categoryName,
       parentCategory: parentCategory || null,
@@ -47,7 +76,20 @@ export const createCategory = async (req: Request, res: Response, next: NextFunc
 
     const savedCategory = await newCategory.save();
 
-    // Step 2: Create Category Description
+    // Index new category in Elasticsearch
+    await client.index({
+      index: 'categories',
+      id: savedCategory._id.toString(), // Ensure _id is a string
+      body: {
+        categoryName,
+        description,
+        meta_title,
+        meta_description,
+        meta_keyword,
+        parentCategory,
+      },
+    });
+
     const newCategoryDescription = new CategoryDescription({
       categoryId: savedCategory._id,
       categoryName,
@@ -68,10 +110,7 @@ export const createCategory = async (req: Request, res: Response, next: NextFunc
     });
     
   } catch (error: any) {
-    // Log the error
     logger.error(error.message, { stack: error.stack });
-
-    // For unexpected errors, use generic error handling
     next(new AppError('An error occurred while creating the category', 500));
   }
 };

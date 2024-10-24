@@ -1,7 +1,9 @@
 import { Request, Response } from "express";
 import { Customer } from '../../models/Customer';
-import VerifyRefreshToken from "./verifyRefreshToken.js";
-import generateTokens from "../generate/generateToken.js";
+import VerifyRefreshToken from "./verifyRefreshToken";
+import generateTokens from "../generate/generateToken";
+import logger from '../../logs/logger';
+import { AppError } from '../../middleware/errors';
 
 interface RefreshTokenResponse {
   newAccessToken: string;
@@ -10,7 +12,6 @@ interface RefreshTokenResponse {
   newRefreshTokenExp: number;
 }
 
-// Extend Request interface to include customerId
 interface CustomRequest extends Request {
   customerId: string; 
 }
@@ -22,47 +23,32 @@ const refreshAccessToken = async (
   try {
     const oldRefreshToken = req.cookies.refreshToken;
     if (!oldRefreshToken) {
-      res.status(401).json({ message: "Refresh token not provided" });
-      return; 
+      throw new AppError("Refresh token not provided", 401);
     }
 
     const { tokenDetails, error, message } = await VerifyRefreshToken(oldRefreshToken);
 
     if (error) {
-      res.status(400).json({ message });
-      return; 
+      throw new AppError(message, 400);
     }
-
-    // Ensure tokenDetails is of type JwtPayload
     if (typeof tokenDetails !== 'object' || !('id' in tokenDetails)) {
-      res.status(400).json({ message: "Invalid token details" });
-      return;
+      throw new AppError("Invalid token details", 400);
     }
 
-    // Find the customer in the MongoDB database
     const customer = await Customer.findById(tokenDetails.id); 
     if (!customer) {
-      res.status(404).json({ message: "Customer not found" });
-      return; 
+      throw new AppError("Customer not found", 404);
     }
-
-    // Check if the refresh token is already present in the customer's tokens
     const customerRefreshToken = customer.refreshTokens.find(token => token.token === oldRefreshToken);
     if (!customerRefreshToken) {
-      res.status(400).json({ message: "Invalid refresh token" });
-      return; 
+      throw new AppError("Invalid refresh token", 400);
     }
-
-    // Generate new tokens using the customer information
     const { accessToken, refreshToken, accessTokenExp, refreshTokenExp } =
     await generateTokens({ id: (customer._id as string).toString() });
 
-    // Update the customer's refresh tokens by replacing the old token with the new one
     customer.refreshTokens = customer.refreshTokens.filter(token => token.token !== oldRefreshToken);
     customer.refreshTokens.push({ token: refreshToken, expiresAt: new Date(Date.now() + refreshTokenExp * 1000) });
     await customer.save();
-
-    // Return new tokens and their expiration times
     res.status(200).json({
       newAccessToken: accessToken,
       newRefreshToken: refreshToken,
@@ -70,11 +56,13 @@ const refreshAccessToken = async (
       newRefreshTokenExp: refreshTokenExp,
     });
   } catch (error: unknown) {
-    const errorMessage = (error instanceof Error) ? error.message : "An unknown error occurred";
-    res.status(500).json({
+    const errorMessage = (error instanceof AppError) 
+      ? error.message 
+      : "An unknown error occurred";
+    logger.error(`Internal server error: ${errorMessage}`); 
+    res.status((error instanceof AppError) ? error.statusCode : 500).json({
       message: errorMessage,
     });
-    throw new Error(errorMessage);
   }
 };
 

@@ -1,21 +1,19 @@
 import { Schema, model, Document } from 'mongoose';
 
-// Category schema interface
 export interface CategoryDocument extends Document {
-  categoryName: string; // Name of the category
-  parentCategory?: Schema.Types.ObjectId | null; // Reference to parent category (null for top-level categories)
-  subcategories?: Schema.Types.ObjectId[]; // Array of subcategories (references)
-  level: number; // Depth level of the category (0 for top-level categories)
-  products?: Schema.Types.ObjectId[]; // List of products that belong to this category
-  vendorId?: Schema.Types.ObjectId; // Vendor reference (optional if categories can be vendor-specific)
-  filters?: string[]; // Array for filtering options
-  status: string; // Status of category (active, inactive, pending)
+  categoryName: string;
+  parentCategory?: Schema.Types.ObjectId | null;
+  subcategories?: Schema.Types.ObjectId[];
+  level: number;
+  products?: Schema.Types.ObjectId[];
+  vendorId?: Schema.Types.ObjectId;
+  filters?: string[];
+  attributes?: Schema.Types.ObjectId[]; 
+  status: string;
   delete?: boolean;
   createdAt: Date;
   updatedAt: Date;
 }
-
-// Category schema definition
 const CategorySchema = new Schema<CategoryDocument>({
   categoryName: {
     type: String,
@@ -24,34 +22,40 @@ const CategorySchema = new Schema<CategoryDocument>({
   },
   parentCategory: {
     type: Schema.Types.ObjectId,
-    ref: 'Category', // Self-referencing field for parent category
+    ref: 'Category',
     default: null,
   },
   subcategories: [
     {
       type: Schema.Types.ObjectId,
-      ref: 'Category', // Self-referencing for subcategories
+      ref: 'Category',
     },
   ],
   level: {
     type: Number,
-    default: 0, // Level 0 is for top-level categories
+    default: 0,
   },
   products: [
     {
       type: Schema.Types.ObjectId,
-      ref: 'Product', // Reference to products in the category
+      ref: 'Product',
     },
   ],
   vendorId: {
     type: Schema.Types.ObjectId,
-    ref: 'Vendor', // Vendor reference (if categories are vendor-specific)
+    ref: 'Vendor',
     required: false,
   },
   filters: {
-    type: [String], // Array for filtering options
+    type: [String],
     required: false,
   },
+  attributes: [
+    {
+      type: Schema.Types.ObjectId,
+      ref: 'Attribute',
+    },
+  ],
   status: {
     type: String,
     enum: ['active', 'inactive', 'pending'],
@@ -71,5 +75,5 @@ const CategorySchema = new Schema<CategoryDocument>({
   },
 });
 
-// Create and export Category model
+// Export Category model
 export const Category = model<CategoryDocument>('Category', CategorySchema);

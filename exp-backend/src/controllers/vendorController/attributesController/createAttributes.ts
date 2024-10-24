@@ -1,11 +1,11 @@
 import { Request, Response, NextFunction } from "express";
-import { Category } from "../../../models/categories";
-import { CategoryDescription } from "../../../models/categories";
+import { Category } from "../../../models/Categories";
+import { CategoryDescription } from "../../../models/Categories";
 import { AppError } from "../../../middleware/errors";
 import logger from "../../../logs/logger";
 
 // Create a new category and its description, allowing hierarchical structure
-export const createCategory = async (req: Request, res: Response, next: NextFunction) => {
+export const CreateCategory = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const {
       categoryName,

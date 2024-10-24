@@ -97,7 +97,6 @@ export const RegisterCustomer = async (
     const ipApiUrl = `http://ip-api.com/json/103.156.137.117`;
     const response = await axios.get(ipApiUrl);
     const ipData = response.data;
-    console.log(ipData)
     if (!ipData || ipData.status !== "success") {
       throw new AppError("Unable to fetch IP information.", 500);
     }

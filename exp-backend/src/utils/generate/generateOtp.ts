@@ -2,18 +2,19 @@ import bcrypt from "bcrypt";
 import { Types } from "mongoose";
 import { Otp } from "../../models/OtpVerification";
 
-// Function to generate random OTP
-export const generateOtp = (): string => Math.floor(1000 + Math.random() * 9000).toString();
+export const generateOtp = (): string =>
+  Math.floor(1000 + Math.random() * 9000).toString();
 
-// Function to hash OTP with salt and pepper
-export const hashOtp = async (otp: string, saltRounds: number): Promise<string> => {
-  return await bcrypt.hash(otp , saltRounds);
+export const hashOtp = async (
+  otp: string,
+  saltRounds: number
+): Promise<string> => {
+  return await bcrypt.hash(otp, saltRounds);
 };
 
-// Save OTP and Token in the database with expiry dates
 export const saveOtpToDatabase = async (
   OtpModel: typeof Otp,
- CustomerId: Types.ObjectId, 
+  CustomerId: Types.ObjectId,
   userType: "Customer" | "Seller",
   hashedOtp: string,
   hashedToken: string

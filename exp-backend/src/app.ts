@@ -2,7 +2,7 @@ import express from "express";
 import cors from "cors";
 import cookieParser from "cookie-parser";
 import passport from "passport";
-import router from "./routes/customerRoutes";
+import router from "./routes";
 import "./middleware/passport";
 import "./controllers/customerController/CustomerSocialAuthController";
 import { MONGODB_URI, NEXT_API_BASE_URL, connectToDatabase } from "./config";

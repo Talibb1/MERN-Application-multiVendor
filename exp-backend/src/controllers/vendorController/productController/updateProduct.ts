@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from "express";
-import { Category } from "../../../models/categories";
-import { CategoryDescription } from "../../../models/categories";
+import { Category } from "../../../models/Categories";
+import { CategoryDescription } from "../../../models/Categories";
 import { AppError } from "../../../middleware/errors";
 import logger from "../../../logs/logger";
 

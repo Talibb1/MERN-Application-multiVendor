@@ -1,5 +1,7 @@
-export * from './Customer.model';
-export * from './Customer_wishlist.model';
-export * from './customer_transaction.model';
-export * from './customer_search.model';
-export * from './customer_activity';
+export * from './CustomerModel';
+export * from './CustomerWishlistModel';
+export * from './CustomerTransactionModel';
+export * from './CustomerSearchModel';
+export * from './CustomerActivityModel';
+
+
