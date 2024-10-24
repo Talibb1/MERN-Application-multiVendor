@@ -1,20 +1,23 @@
 import { Schema, model, Document } from 'mongoose';
 
 // Category schema interface
-interface CategoryDocument extends Document {
-  name: string; // Name of the category
+export interface CategoryDocument extends Document {
+  categoryName: string; // Name of the category
   parentCategory?: Schema.Types.ObjectId | null; // Reference to parent category (null for top-level categories)
   subcategories?: Schema.Types.ObjectId[]; // Array of subcategories (references)
   level: number; // Depth level of the category (0 for top-level categories)
   products?: Schema.Types.ObjectId[]; // List of products that belong to this category
   vendorId?: Schema.Types.ObjectId; // Vendor reference (optional if categories can be vendor-specific)
+  filters?: string[]; // Array for filtering options
+  status: string; // Status of category (active, inactive, pending)
+  delete?: boolean;
   createdAt: Date;
   updatedAt: Date;
 }
 
 // Category schema definition
 const CategorySchema = new Schema<CategoryDocument>({
-  name: {
+  categoryName: {
     type: String,
     required: true,
     trim: true,
@@ -45,6 +48,19 @@ const CategorySchema = new Schema<CategoryDocument>({
     ref: 'Vendor', // Vendor reference (if categories are vendor-specific)
     required: false,
   },
+  filters: {
+    type: [String], // Array for filtering options
+    required: false,
+  },
+  status: {
+    type: String,
+    enum: ['active', 'inactive', 'pending'],
+    default: 'active',
+  },
+  delete: {
+    type: Boolean,
+    default: false,
+  },
   createdAt: {
     type: Date,
     default: Date.now,
@@ -56,5 +72,4 @@ const CategorySchema = new Schema<CategoryDocument>({
 });
 
 // Create and export Category model
-const Category = model<CategoryDocument>('Category', CategorySchema);
-export default Category;
+export const Category = model<CategoryDocument>('Category', CategorySchema);

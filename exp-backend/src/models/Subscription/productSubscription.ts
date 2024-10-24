@@ -1,7 +1,7 @@
 import { Schema, model, Document } from 'mongoose';
 
 // Subscription schema interface
-interface ProductSubscriptionDocument extends Document {
+export interface ProductSubscriptionDocument extends Document {
   name: string; // Name of the subscription plan
   price: number; // Price of the subscription
   frequency: string; // Frequency of billing (e.g., 'Monthly', 'Yearly')
@@ -72,5 +72,5 @@ const SubscriptionSchema = new Schema<ProductSubscriptionDocument>({
 });
 
 // Create and export Subscription model
-const Subscription = model<ProductSubscriptionDocument>('ProductSubscription', SubscriptionSchema);
-export default Subscription;
+export const Subscription = model<ProductSubscriptionDocument>('ProductSubscription', SubscriptionSchema);
+

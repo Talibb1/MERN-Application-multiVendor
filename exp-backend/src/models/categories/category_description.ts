@@ -1,15 +1,19 @@
 import { Schema, model, Document } from 'mongoose';
 
 // CategoryDescription schema interface
-interface CategoryDescriptionDocument extends Document {
+export interface CategoryDescriptionDocument extends Document {
   categoryId: Schema.Types.ObjectId; // Reference to the category
-  name: string; // Name of the category
   description?: string; // Description of the category
   meta_title?: string; // Meta title for SEO
   meta_description?: string; // Meta description for SEO
   meta_keyword?: string[]; // Meta keywords for SEO
-  createdAt: Date; // Created timestamp
-  updatedAt: Date; // Updated timestamp
+  image?: string; // URL for category image
+  views?: number; // Number of views for the category
+  sales?: number; // Total sales for the category
+  activeProductsCount?: number; // Count of active products in the category
+  displayOrder?: number; // Display order for sorting categories
+  createdAt: Date;
+  updatedAt: Date;
 }
 
 // CategoryDescription schema definition
@@ -18,11 +22,6 @@ const CategoryDescriptionSchema = new Schema<CategoryDescriptionDocument>({
     type: Schema.Types.ObjectId,
     ref: 'Category', 
     required: true,
-  },
-  name: {
-    type: String,
-    required: true,
-    trim: true,
   },
   description: {
     type: String,
@@ -37,8 +36,29 @@ const CategoryDescriptionSchema = new Schema<CategoryDescriptionDocument>({
     required: false,
   },
   meta_keyword: {
-    type: [String], // Array of strings
+    type: [String],
     required: false,
+  },
+  image: {
+    type: String,
+    required: false,
+    default: "",
+  },
+  views: {
+    type: Number,
+    default: 0,
+  },
+  sales: {
+    type: Number,
+    default: 0,
+  },
+  activeProductsCount: {
+    type: Number,
+    default: 0,
+  },
+  displayOrder: {
+    type: Number,
+    default: 0,
   },
   createdAt: {
     type: Date,
@@ -51,5 +71,5 @@ const CategoryDescriptionSchema = new Schema<CategoryDescriptionDocument>({
 });
 
 // Create and export CategoryDescription model
-const CategoryDescription = model<CategoryDescriptionDocument>('CategoryDescription', CategoryDescriptionSchema);
-export default CategoryDescription;
+export const CategoryDescription = model<CategoryDescriptionDocument>('CategoryDescription', CategoryDescriptionSchema);
+

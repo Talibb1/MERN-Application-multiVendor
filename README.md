@@ -192,4 +192,3 @@ To set up the project, follow these steps:
 - Made it concise while ensuring all essential details are covered.
 
 Feel free to modify any sections as per your preferences or to add any specific details that may be necessary for your team or users.
-````

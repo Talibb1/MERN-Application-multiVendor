@@ -1,7 +1,7 @@
 import { Schema, model, Document } from 'mongoose';
 
 // AddToCart schema interface
-interface AddToCartDocument extends Document {
+export interface AddToCartDocument extends Document {
   apiId: string; // API ID for the cart item
   customerId?: Schema.Types.ObjectId; // Reference to the customer (optional for guests)
   sessionId: string; // Session ID for tracking guests
@@ -60,5 +60,4 @@ const AddToCartSchema = new Schema<AddToCartDocument>({
 });
 
 // Create and export AddToCart model
-const AddToCart = model<AddToCartDocument>('AddToCart', AddToCartSchema);
-export default AddToCart;
+export const AddToCart = model<AddToCartDocument>('AddToCart', AddToCartSchema);
